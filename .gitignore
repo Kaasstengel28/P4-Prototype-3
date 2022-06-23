@@ -1,2 +1,4 @@
-*.agdai
-MAlonzo/**
+.parcel-cache
+.DS_Store
+node_modules
+.vscode
