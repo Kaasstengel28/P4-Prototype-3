@@ -1,6 +1,5 @@
 import * as PIXI from "pixi.js";
 import { Game } from "./game";
-import { Seed } from "./seed";
 import * as Matter from 'matter-js';
 
 export class Player extends PIXI.Sprite {
@@ -49,11 +48,6 @@ export class Player extends PIXI.Sprite {
 }
 
   update() {
-    let mapwidth = 18000
-    let mapheight = 600
-    let centerx = 500
-    let centery = 600
-
     //movement things
     if (this.xspeed != 0) {
       Matter.Body.setVelocity(this.rigidBody, { x: this.xspeed, y: this.rigidBody.velocity.y })
@@ -64,16 +58,6 @@ export class Player extends PIXI.Sprite {
 
     if (this.rigidBody.position.y > 10000) this.resetPosition()
 
-    //camera things jwz
-    // beweeg het karakter over de map maar niet buiten beeld
-    this.x = this.clamp(this.x + this.xspeed, 0, mapwidth)
-    this.y = this.clamp(this.y + this.yspeed, 0, mapheight)
-
-    // centreer het hele level onder het karakter, gebruik clamp om bij de randen niet te scrollen
-    let mapx = this.clamp(this.x, centerx, mapwidth - 9000)
-    let mapy = this.clamp(this.y, centery, mapheight - centery)
-
-    this.game.pixi.stage.pivot.set(mapx - 500, mapy)
   }
 
   clamp(num: number, min: number, max: number) {

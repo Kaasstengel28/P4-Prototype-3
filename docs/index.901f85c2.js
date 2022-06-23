@@ -534,10 +534,13 @@ var _godslugPng = require("./images/godslug.png");
 var _godslugPngDefault = parcelHelpers.interopDefault(_godslugPng);
 var _idlePng = require("./images/idle.png");
 var _idlePngDefault = parcelHelpers.interopDefault(_idlePng);
+var _sharkPng = require("./images/shark.png");
+var _sharkPngDefault = parcelHelpers.interopDefault(_sharkPng);
 var _particles = require("./particles");
 var _player = require("./player");
 var _wereld = require("./wereld");
-var _drSchtank = require("./DrSchtank");
+var _platform = require("./platform");
+var _spider = require("./spider");
 class Game {
     constructor(){
         this.engine = _matterJsDefault.default.Engine.create();
@@ -547,13 +550,13 @@ class Game {
         window.addEventListener('click', this.mylistener);
         //het gameveld wordt aangemaakt
         this.pixi = new _pixiJs.Application({
-            width: 18000,
+            width: 1800,
             height: 600
         });
         document.body.appendChild(this.pixi.view);
         //laad de images alvast
         this.loader = new _pixiJs.Loader();
-        this.loader.add('bubbleTexture', _sakuraPngDefault.default).add('waterTexture', _backgroundPngDefault.default).add('deadTexture', _bonesPngDefault.default).add('foreground', _foregroundPngDefault.default).add('stinkySprite', _godslugPngDefault.default).add('playerTexture', _idlePngDefault.default);
+        this.loader.add('bubbleTexture', _sakuraPngDefault.default).add('waterTexture', _backgroundPngDefault.default).add('deadTexture', _bonesPngDefault.default).add('foreground', _foregroundPngDefault.default).add('stinkySprite', _godslugPngDefault.default).add('playerTexture', _idlePngDefault.default).add('platformTexture', _foregroundPngDefault.default).add('spiderTexture', _sharkPngDefault.default);
         //al zijn de images geladen roept hij de functie aan
         this.loader.load(()=>this.doneLoading()
         );
@@ -574,8 +577,10 @@ class Game {
         this.pixi.stage.addChild(this.player);
         this.bubble = new _particles.Bubble(this.loader.resources["bubbleTexture"].texture);
         this.pixi.stage.addChild(this.bubble);
-        this.slug = new _drSchtank.Godslug(this.loader.resources["stinkySprite"].texture);
-        this.pixi.stage.addChild(this.slug);
+        this.platform = new _platform.Platform(this.loader.resources["platformTexture"].texture, this);
+        this.pixi.stage.addChild(this.platform);
+        this.spider = new _spider.Spider(this.loader.resources["spiderTexture"].texture, this);
+        this.pixi.stage.addChild(this.spider);
         //hier zorgt hij ervoor dat er meerdere sprites komen
         for(let i = 0; i < 20; i++){
             let temp = new _particles.Bubble(this.loader.resources["bubbleTexture"].texture);
@@ -595,13 +600,12 @@ class Game {
         //dit update de ahtergrond en de player
         this.background.tilePosition.x += 0.25;
         this.player.update();
-        this.slug.update(delta);
-    //hier wordt ervoor gezorgt dat collision bestaat?
+        this.spider.update();
     }
 }
 new Game();
 
-},{"pixi.js":"dsYej","./images/sakura.png":"8JSvj","./images/background.png":"fwQMR","./images/bones.png":"dLwEI","./images/foreground.png":"6TC8P","./images/godslug.png":"53l6e","./images/idle.png":"c34iw","./particles":"kkmLE","./player":"6OTSH","./wereld":"5XBc0","./DrSchtank":"fbLgW","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","matter-js":"2oYKU"}],"dsYej":[function(require,module,exports) {
+},{"pixi.js":"dsYej","matter-js":"2oYKU","./images/sakura.png":"8JSvj","./images/background.png":"fwQMR","./images/bones.png":"dLwEI","./images/foreground.png":"6TC8P","./images/godslug.png":"53l6e","./images/idle.png":"c34iw","./particles":"kkmLE","./player":"6OTSH","./wereld":"5XBc0","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./platform":"lNgaF","./spider":"lt4qm","./images/shark.png":"7HgQx"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "utils", ()=>_utils
@@ -37098,232 +37102,7 @@ function __extends(d, b) {
     return AnimatedSprite1;
 }(_sprite.Sprite);
 
-},{"@pixi/core":"7PEF8","@pixi/sprite":"9mbxh","@pixi/ticker":"8ekG7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8JSvj":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "sakura.920dd15c.png" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"lgJ39"}],"lgJ39":[function(require,module,exports) {
-"use strict";
-var bundleURL = {};
-function getBundleURLCached(id) {
-    var value = bundleURL[id];
-    if (!value) {
-        value = getBundleURL();
-        bundleURL[id] = value;
-    }
-    return value;
-}
-function getBundleURL() {
-    try {
-        throw new Error();
-    } catch (err) {
-        var matches = ('' + err.stack).match(/(https?|file|ftp):\/\/[^)\n]+/g);
-        if (matches) // The first two stack frames will be this function and getBundleURLCached.
-        // Use the 3rd one, which will be a runtime in the original bundle.
-        return getBaseURL(matches[2]);
-    }
-    return '/';
-}
-function getBaseURL(url) {
-    return ('' + url).replace(/^((?:https?|file|ftp):\/\/.+)\/[^/]+$/, '$1') + '/';
-} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
-function getOrigin(url) {
-    var matches = ('' + url).match(/(https?|file|ftp):\/\/[^/]+/);
-    if (!matches) throw new Error('Origin not found');
-    return matches[0];
-}
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-exports.getOrigin = getOrigin;
-
-},{}],"fwQMR":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "background.84053517.png" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"lgJ39"}],"dLwEI":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "bones.df4825d2.png" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"lgJ39"}],"6TC8P":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "foreground.725088f5.png" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"lgJ39"}],"53l6e":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "godslug.e865e1d8.png" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"lgJ39"}],"c34iw":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "idle.39588b73.png" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"lgJ39"}],"kkmLE":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Bubble", ()=>Bubble
-);
-var _pixiJs = require("pixi.js");
-class Bubble extends _pixiJs.Sprite {
-    constructor(texture){
-        super(texture);
-        //de positie van de bubbels wordt hier bepaalt
-        this.x = Math.random() * 1880;
-        this.y = Math.random() * 800;
-        //hier wordt de snelheid van de bubbels bepaalt
-        this.speedy = Math.random() * 0.5;
-        this.speedx = Math.random() * 2;
-        this.scale.set(0.05, 0.05);
-    }
-    update(delta) {
-        //hier wordt de snelheid toegepast zodat ze bewegen
-        this.y += this.speedy;
-        this.x += this.speedx;
-        if (this.x > 2000) {
-            this.x = -100;
-            this.y = Math.random() * 600;
-        } else if (this.y > 600) {
-            this.x = -100;
-            this.y = Math.random() * 600;
-        }
-    }
-}
-
-},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6OTSH":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Player", ()=>Player
-);
-var _pixiJs = require("pixi.js");
-var _matterJs = require("matter-js");
-class Player extends _pixiJs.Sprite {
-    xspeed = 0;
-    yspeed = 0;
-    gotSeed = false;
-    constructor(texture, game){
-        super(texture);
-        this.game = game;
-        this.anchor.set(0.5);
-        window.addEventListener("keydown", (e)=>this.onKeyDown(e)
-        );
-        window.addEventListener("keyup", (e)=>this.onKeyUp(e)
-        );
-        this.x = 100;
-        this.y = 345;
-        const playerOptions = {
-            density: 0.001,
-            friction: 0.7,
-            frictionStatic: 0,
-            frictionAir: 0.01,
-            restitution: 0.5,
-            inertia: Infinity,
-            inverseInertia: Infinity,
-            label: "Player"
-        };
-        this.rigidBody = _matterJs.Bodies.rectangle(this.x, this.y, 75, 100, playerOptions);
-        _matterJs.Composite.add(game.engine.world, this.rigidBody);
-    }
-    jump() {
-        if (this.y >= 300) {
-            let jumpforce = -0.2;
-            _matterJs.Body.applyForce(this.rigidBody, {
-                x: this.rigidBody.position.x,
-                y: this.rigidBody.position.y
-            }, {
-                x: 0,
-                y: jumpforce
-            });
-        }
-    }
-    hitseed() {
-        this.gotSeed = true;
-    }
-    update() {
-        let mapwidth = 18000;
-        let mapheight = 600;
-        let centerx = 500;
-        let centery = 600;
-        //movement things
-        if (this.xspeed != 0) _matterJs.Body.setVelocity(this.rigidBody, {
-            x: this.xspeed,
-            y: this.rigidBody.velocity.y
-        });
-        this.x = this.rigidBody.position.x;
-        this.y = this.rigidBody.position.y;
-        this.rotation = this.rigidBody.angle;
-        if (this.rigidBody.position.y > 10000) this.resetPosition();
-        //camera things jwz
-        // beweeg het karakter over de map maar niet buiten beeld
-        this.x = this.clamp(this.x + this.xspeed, 0, mapwidth);
-        this.y = this.clamp(this.y + this.yspeed, 0, mapheight);
-        // centreer het hele level onder het karakter, gebruik clamp om bij de randen niet te scrollen
-        let mapx = this.clamp(this.x, centerx, mapwidth - 9000);
-        let mapy = this.clamp(this.y, centery, mapheight - centery);
-        this.game.pixi.stage.pivot.set(mapx - 500, mapy);
-    }
-    clamp(num, min, max) {
-        return Math.min(Math.max(num, min), max);
-    }
-    //movement thingies
-    //detecteerd de keyboard indrukkings
-    onKeyDown(e) {
-        if (e.key === " " || e.key === "ArrowUp") {
-            if (this.rigidBody.velocity.y > -0.4 && this.rigidBody.velocity.y < 0.4) _matterJs.Body.applyForce(this.rigidBody, {
-                x: this.rigidBody.position.x,
-                y: this.rigidBody.position.y
-            }, {
-                x: 0,
-                y: -0.25
-            });
-        }
-        switch(e.key.toUpperCase()){
-            case "A":
-            case "ARROWLEFT":
-                this.xspeed = -7;
-                this.scale.x = -1;
-                break;
-            case "D":
-            case "ARROWRIGHT":
-                this.xspeed = 7;
-                this.scale.x = 1;
-                break;
-            case "W":
-            case "ARROWUP":
-            case " ":
-                this.jump();
-                break;
-            case "S":
-            case "ARROWDOWN":
-                this.yspeed = 7;
-                break;
-        }
-    }
-    //detecteerd de keyboard loslatings
-    onKeyUp(e) {
-        switch(e.key.toUpperCase()){
-            case " ":
-                break;
-            case "A":
-            case "D":
-            case "ARROWLEFT":
-            case "ARROWRIGHT":
-                this.xspeed = 0;
-                break;
-            case "W":
-            case "S":
-            case "ARROWUP":
-            case "ARROWDOWN":
-                this.yspeed = 0;
-                break;
-        }
-    }
-    //al gaat het fout herstart hij je op de originele plek
-    resetPosition() {
-        _matterJs.Body.setPosition(this.rigidBody, {
-            x: 100,
-            y: 345
-        });
-        _matterJs.Body.setVelocity(this.rigidBody, {
-            x: 0,
-            y: 0
-        });
-        _matterJs.Body.setAngularVelocity(this.rigidBody, 0);
-    }
-}
-
-},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","matter-js":"2oYKU"}],"2oYKU":[function(require,module,exports) {
+},{"@pixi/core":"7PEF8","@pixi/sprite":"9mbxh","@pixi/ticker":"8ekG7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2oYKU":[function(require,module,exports) {
 var global = arguments[3];
 /*!
  * matter-js 0.18.0 by @liabru
@@ -45125,7 +44904,220 @@ var global = arguments[3];
     ]);
 });
 
-},{}],"5XBc0":[function(require,module,exports) {
+},{}],"8JSvj":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "sakura.920dd15c.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"lgJ39":[function(require,module,exports) {
+"use strict";
+var bundleURL = {};
+function getBundleURLCached(id) {
+    var value = bundleURL[id];
+    if (!value) {
+        value = getBundleURL();
+        bundleURL[id] = value;
+    }
+    return value;
+}
+function getBundleURL() {
+    try {
+        throw new Error();
+    } catch (err) {
+        var matches = ('' + err.stack).match(/(https?|file|ftp):\/\/[^)\n]+/g);
+        if (matches) // The first two stack frames will be this function and getBundleURLCached.
+        // Use the 3rd one, which will be a runtime in the original bundle.
+        return getBaseURL(matches[2]);
+    }
+    return '/';
+}
+function getBaseURL(url) {
+    return ('' + url).replace(/^((?:https?|file|ftp):\/\/.+)\/[^/]+$/, '$1') + '/';
+} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+function getOrigin(url) {
+    var matches = ('' + url).match(/(https?|file|ftp):\/\/[^/]+/);
+    if (!matches) throw new Error('Origin not found');
+    return matches[0];
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+
+},{}],"fwQMR":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "background.84053517.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"dLwEI":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "bones.df4825d2.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"6TC8P":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "foreground.725088f5.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"53l6e":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "godslug.e865e1d8.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"c34iw":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "idle.39588b73.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"kkmLE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Bubble", ()=>Bubble
+);
+var _pixiJs = require("pixi.js");
+class Bubble extends _pixiJs.Sprite {
+    constructor(texture){
+        super(texture);
+        //de positie van de bubbels wordt hier bepaalt
+        this.x = Math.random() * 1880;
+        this.y = Math.random() * 800;
+        //hier wordt de snelheid van de bubbels bepaalt
+        this.speedy = Math.random() * 0.5;
+        this.speedx = Math.random() * 2;
+        this.scale.set(0.05, 0.05);
+    }
+    update(delta) {
+        //hier wordt de snelheid toegepast zodat ze bewegen
+        this.y += this.speedy;
+        this.x += this.speedx;
+        if (this.x > 2000) {
+            this.x = -100;
+            this.y = Math.random() * 600;
+        } else if (this.y > 600) {
+            this.x = -100;
+            this.y = Math.random() * 600;
+        }
+    }
+}
+
+},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6OTSH":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Player", ()=>Player
+);
+var _pixiJs = require("pixi.js");
+var _matterJs = require("matter-js");
+class Player extends _pixiJs.Sprite {
+    xspeed = 0;
+    yspeed = 0;
+    gotSeed = false;
+    constructor(texture, game){
+        super(texture);
+        this.game = game;
+        this.anchor.set(0.5);
+        window.addEventListener("keydown", (e)=>this.onKeyDown(e)
+        );
+        window.addEventListener("keyup", (e)=>this.onKeyUp(e)
+        );
+        this.x = 100;
+        this.y = 345;
+        const playerOptions = {
+            density: 0.001,
+            friction: 0.7,
+            frictionStatic: 0,
+            frictionAir: 0.01,
+            restitution: 0.5,
+            inertia: Infinity,
+            inverseInertia: Infinity,
+            label: "Player"
+        };
+        this.rigidBody = _matterJs.Bodies.rectangle(this.x, this.y, 75, 100, playerOptions);
+        _matterJs.Composite.add(game.engine.world, this.rigidBody);
+    }
+    jump() {
+        if (this.y >= 300) {
+            let jumpforce = -0.2;
+            _matterJs.Body.applyForce(this.rigidBody, {
+                x: this.rigidBody.position.x,
+                y: this.rigidBody.position.y
+            }, {
+                x: 0,
+                y: jumpforce
+            });
+        }
+    }
+    hitseed() {
+        this.gotSeed = true;
+    }
+    update() {
+        //movement things
+        if (this.xspeed != 0) _matterJs.Body.setVelocity(this.rigidBody, {
+            x: this.xspeed,
+            y: this.rigidBody.velocity.y
+        });
+        this.x = this.rigidBody.position.x;
+        this.y = this.rigidBody.position.y;
+        this.rotation = this.rigidBody.angle;
+        if (this.rigidBody.position.y > 10000) this.resetPosition();
+    }
+    clamp(num, min, max) {
+        return Math.min(Math.max(num, min), max);
+    }
+    //movement thingies
+    //detecteerd de keyboard indrukkings
+    onKeyDown(e) {
+        if (e.key === " " || e.key === "ArrowUp") {
+            if (this.rigidBody.velocity.y > -0.4 && this.rigidBody.velocity.y < 0.4) _matterJs.Body.applyForce(this.rigidBody, {
+                x: this.rigidBody.position.x,
+                y: this.rigidBody.position.y
+            }, {
+                x: 0,
+                y: -0.25
+            });
+        }
+        switch(e.key.toUpperCase()){
+            case "A":
+            case "ARROWLEFT":
+                this.xspeed = -7;
+                this.scale.x = -1;
+                break;
+            case "D":
+            case "ARROWRIGHT":
+                this.xspeed = 7;
+                this.scale.x = 1;
+                break;
+            case "W":
+            case "ARROWUP":
+            case " ":
+                this.jump();
+                break;
+            case "S":
+            case "ARROWDOWN":
+                this.yspeed = 7;
+                break;
+        }
+    }
+    //detecteerd de keyboard loslatings
+    onKeyUp(e) {
+        switch(e.key.toUpperCase()){
+            case " ":
+                break;
+            case "A":
+            case "D":
+            case "ARROWLEFT":
+            case "ARROWRIGHT":
+                this.xspeed = 0;
+                break;
+            case "W":
+            case "S":
+            case "ARROWUP":
+            case "ARROWDOWN":
+                this.yspeed = 0;
+                break;
+        }
+    }
+    //al gaat het fout herstart hij je op de originele plek
+    resetPosition() {
+        _matterJs.Body.setPosition(this.rigidBody, {
+            x: 100,
+            y: 345
+        });
+        _matterJs.Body.setVelocity(this.rigidBody, {
+            x: 0,
+            y: 0
+        });
+        _matterJs.Body.setAngularVelocity(this.rigidBody, 0);
+    }
+}
+
+},{"pixi.js":"dsYej","matter-js":"2oYKU","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5XBc0":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Foreground", ()=>Foreground
@@ -45136,10 +45128,10 @@ var _matterJsDefault = parcelHelpers.interopDefault(_matterJs);
 class Foreground extends _pixiJs.Sprite {
     constructor(texture, game){
         super(texture);
-        this.x = 100;
+        this.x = 0;
         this.y = 530;
         this.anchor.set(0.5);
-        this.width = 18000;
+        this.width = 4000;
         this.height = 200;
         this.rigidBody = _matterJsDefault.default.Bodies.rectangle(this.x, this.y, this.width, this.height, {
             isStatic: true
@@ -45150,35 +45142,75 @@ class Foreground extends _pixiJs.Sprite {
     }
 }
 
-},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","matter-js":"2oYKU"}],"fbLgW":[function(require,module,exports) {
+},{"pixi.js":"dsYej","matter-js":"2oYKU","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lNgaF":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Godslug", ()=>Godslug
+parcelHelpers.export(exports, "Platform", ()=>Platform
 );
 var _pixiJs = require("pixi.js");
-class Godslug extends _pixiJs.Sprite {
-    talking = false;
-    constructor(texture){
+var _matterJs = require("matter-js");
+var _matterJsDefault = parcelHelpers.interopDefault(_matterJs);
+class Platform extends _pixiJs.Sprite {
+    constructor(texture, game){
         super(texture);
-        this.interactive = true;
-        this.buttonMode = true;
-        this.on('pointerdown', ()=>this.stinkyClicked()
-        );
-        this.x = 1600;
-        this.y = 249;
-        this.scale.set(0.3, 0.3);
-    }
-    stinkyClicked() {
-        console.log("you smell like you farded");
-        this.talking = !this.talking;
-        this.stinkyTalking();
-    }
-    stinkyTalking() {}
-    update(delta) {
-        this.talking;
+        this.x = 600;
+        this.y = 150;
+        this.anchor.set(0.5);
+        this.width = 600;
+        this.height = 100;
+        this.rigidBody = _matterJsDefault.default.Bodies.rectangle(this.x, this.y, this.width, this.height, {
+            isStatic: true
+        });
+        _matterJsDefault.default.Composite.add(game.engine.world, this.rigidBody);
+        this.x = this.rigidBody.position.x;
+        this.y = this.rigidBody.position.y;
     }
 }
 
-},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fpRtI","edeGs"], "edeGs", "parcelRequirea0e5")
+},{"pixi.js":"dsYej","matter-js":"2oYKU","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lt4qm":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Spider", ()=>Spider
+);
+var _pixiJs = require("pixi.js");
+var _matterJs = require("matter-js");
+var _matterJsDefault = parcelHelpers.interopDefault(_matterJs);
+class Spider extends _pixiJs.Sprite {
+    constructor(texture, game){
+        super(texture);
+        this.x = 400;
+        this.y = 50;
+        this.anchor.set(0.5);
+        this.scale.set(0.5);
+        this.rigidBody = _matterJsDefault.default.Bodies.circle(100, 100, 30, {
+            friction: 0.00001,
+            restitution: 0.5,
+            density: 0.001
+        });
+        _matterJsDefault.default.Composite.add(game.engine.world, this.rigidBody);
+        this.reset();
+    }
+    update() {
+        this.x = this.rigidBody.position.x;
+        this.y = this.rigidBody.position.y;
+        this.rotation = this.rigidBody.angle;
+        _matterJsDefault.default.Body.setVelocity(this.rigidBody, {
+            x: 2,
+            y: 5
+        });
+        if (this.rigidBody.position.y > 1000) this.reset();
+    }
+    reset() {
+        _matterJsDefault.default.Body.setPosition(this.rigidBody, {
+            x: 400,
+            y: 50
+        });
+    }
+}
+
+},{"pixi.js":"dsYej","matter-js":"2oYKU","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7HgQx":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "shark.29daeb95.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}]},["fpRtI","edeGs"], "edeGs", "parcelRequirea0e5")
 
 //# sourceMappingURL=index.901f85c2.js.map

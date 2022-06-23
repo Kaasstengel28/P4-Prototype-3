@@ -2,19 +2,17 @@ import * as PIXI from "pixi.js";
 import Matter from "matter-js";
 import { Game } from "./game";
 
-export class Foreground extends PIXI.Sprite {
+export class Platform extends PIXI.Sprite {
   private rigidBody: Matter.Body;
 
   constructor(texture: PIXI.Texture, game: Game) {
     super(texture);
-    this.x = 0;
-    this.y = 530;
+    this.x = 600;
+    this.y = 150;
     this.anchor.set(0.5);
-    this.width = 4000
-    this.height = 200
-
+    this.width = 600
+    this.height = 100
     this.rigidBody = Matter.Bodies.rectangle(this.x, this.y, this.width, this.height, {
-
       isStatic: true
     });
     Matter.Composite.add(game.engine.world, this.rigidBody);
